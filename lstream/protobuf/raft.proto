@@ -1,0 +1,64 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto"; 
+
+// Raft Consensus Service Definition.
+service RaftConsensusService {
+  // RequestVote handler
+  rpc handle_request_vote (AskForVoteRequest) returns (AskForVoteReply) {}
+  rpc handle_append_entries (AppendEntriesRequest) returns (AppendEntriesReply) {}
+}
+
+// The request message containing the RequestVote Parameters.
+message AskForVoteRequest {
+  // candidate term
+  int32 c_term = 1;
+  // candidate id
+  int32 c_id = 2;
+  // index of candidate's last log entry 
+  int32 c_last_log_index = 3;
+  // term of candidate's last log entry
+  int32 c_last_log_term = 4;
+}
+
+// The response message containing RequestVote response
+message AskForVoteReply {
+  // Responders term
+  int32 term = 1;
+  // If voted
+  bool voted_yes = 2;
+}
+
+message LogEntry {
+    //  term
+    int32 term = 1;
+    // command
+    google.protobuf.Struct command = 2;
+}
+
+// AppendEntries Request Parameters
+message AppendEntriesRequest {
+    // leaders term
+    int32 term = 1;
+    // Leader id
+    int32 leader_id = 2;
+    // Previous Log index
+    int32  prev_log_index = 3;
+    // Previous log term
+    int32  prev_log_term = 4;
+    // Commit Index
+    int32  commit_index = 5;
+    // Log Entries
+    repeated LogEntry entries = 6;
+}
+
+// AppendEntries Reply Parameters
+message AppendEntriesReply {
+    // follower's term
+    bool success = 1;
+    // conflicting term
+    int32 conflicting_term = 2;
+    //  Conflicting index
+    int32  conflicting_index = 3;
+    // current term
+    int32  term = 4;
+}

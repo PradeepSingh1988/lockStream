@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+// Raft Consensus Service Definition.
+service LockStream {
+  // RequestVote handler
+  rpc acquire (LockOpRequest) returns (LockOpReply) {}
+  rpc release (LockOpRequest) returns (LockOpReply) {}
+}
+
+// The request message containing the Lock Acquire Parameters.
+message LockOpRequest {
+  // lock_id
+  string lock_id = 1;
+  // client id
+  string client_id = 2;
+  // request id
+  int32 request_id = 3;
+}
+
+// The response message containing Lock Acquire response
+message LockOpReply {
+  // lock id
+  string lock_id = 1;
+  // Is Leader
+  bool is_leader = 2;
+  // Is Lock acquire request timedout
+  bool is_timedout = 3;
+  // is acquired
+  bool is_successful = 4;
+  // client id
+  string client_id = 5;
+  // request id
+  int32 request_id = 6;
+  // Is valid
+  bool is_valid = 7;
+
+}

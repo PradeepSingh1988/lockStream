@@ -18,7 +18,8 @@ setup_logger()
 LOG = logging.getLogger(__name__)
 
 
-def serve(index, port, state_dir):
+def serve(index, state_dir):
+    ports = {0: 17000, 1: 18000, 2: 19000}
     state_machine_q = queue.Queue()
     raft_log_file = os.path.join(state_dir, "raft_{}.log".format(str(index)))
     raft = RaftConsensus(
@@ -28,7 +29,7 @@ def serve(index, port, state_dir):
         Persister(raft_log_file),
     )
     lock_svc = LockServer(raft, state_machine_q, index)
-    port = str(port)
+    port = str(ports[index])
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=20))
     raft_pb2_grpc.add_RaftConsensusServiceServicer_to_server(raft, server)
     lstream_pb2_grpc.add_LockStreamServicer_to_server(lock_svc, server)
@@ -45,12 +46,11 @@ def main():
     )
 
     parser.add_argument("--index", required=True, help="Index")
-    parser.add_argument("--port", required=True, help="Port")
     parser.add_argument("--state-dir", required=True, help="State Directory")
     args = parser.parse_args()
     index = int(args.index)
-    port = int(args.port)
-    serve(index, port, args.state_dir)
+
+    serve(index, args.state_dir)
 
 
 if __name__ == "__main__":

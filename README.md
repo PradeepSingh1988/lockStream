@@ -1,5 +1,5 @@
 # lockStream
-A highly consistent distributed lock service based on raft.
+A highly consistent distributed lock service based on [raft](https://raft.github.io/) consensus protocol.
 It supports two APIs, `acquire` and `release`.
 
 ## Running lockStream

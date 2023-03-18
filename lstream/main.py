@@ -122,7 +122,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
                 is_timedout=False,
                 is_successful=False,
                 client_id=cmd["client_id"],
-                request_id=cmd["request_id"],
+                request_id=int(cmd["request_id"]),
                 is_valid=False,
             )
         command, queue = None, None
@@ -150,7 +150,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
                     is_timedout=False,
                     is_successful=True,
                     client_id=command["client_id"],
-                    request_id=command["request_id"],
+                    request_id=int(command["request_id"]),
                     is_valid=_is_valid(command),
                 )
             elif command["op"] == "acquire" and not command["status"]:
@@ -173,7 +173,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
                                 is_timedout=False,
                                 is_successful=True,
                                 client_id=command["client_id"],
-                                request_id=command["request_id"],
+                                request_id=int(command["request_id"]),
                                 is_valid=_is_valid(command),
                             )
                     with command["condition"]:
@@ -185,7 +185,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
                     is_timedout=True,
                     is_successful=False,
                     client_id=command["client_id"],
-                    request_id=command["request_id"],
+                    request_id=int(command["request_id"]),
                     is_valid=_is_valid(command),
                 )
             elif command["op"] == "release" and command["status"]:
@@ -198,7 +198,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
                     is_timedout=False,
                     is_successful=True,
                     client_id=command["client_id"],
-                    request_id=command["request_id"],
+                    request_id=int(command["request_id"]),
                     is_valid=_is_valid(command),
                 )
             elif command["op"] == "release" and not command["status"]:
@@ -213,7 +213,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
                     is_timedout=False,
                     is_successful=False,
                     client_id=command["client_id"],
-                    request_id=command["request_id"],
+                    request_id=int(command["request_id"]),
                     is_valid=_is_valid(command),
                 )
 
@@ -228,7 +228,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
                 is_timedout=True,
                 is_successful=False,
                 client_id=command["client_id"],
-                request_id=command["request_id"],
+                request_id=int(command["request_id"]),
                 is_valid=False,
             )
 
@@ -236,8 +236,8 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
         cmd = {
             "op": "acquire",
             "lock_id": request.lock_id,
-            "client_id": request.client_id,
-            "request_id": request.request_id,
+            "client_id": str(request.client_id),
+            "request_id": str(request.request_id),
         }
         result = self._wait_till_applied(cmd)
         return result
@@ -246,7 +246,7 @@ class LockServer(lstream_pb2_grpc.LockStreamServicer):
         cmd = {
             "op": "release",
             "lock_id": request.lock_id,
-            "client_id": request.client_id,
+            "client_id": str(request.client_id),
             "request_id": str(request.request_id),
         }
         result = self._wait_till_applied(cmd)

@@ -2,6 +2,7 @@ import argparse
 import logging
 import queue
 from concurrent import futures
+import os
 
 import grpc
 
@@ -17,13 +18,14 @@ setup_logger()
 LOG = logging.getLogger(__name__)
 
 
-def serve(index, port):
+def serve(index, port, state_dir):
     state_machine_q = queue.Queue()
+    raft_log_file = os.path.join(state_dir, "raft_{}.log".format(str(index)))
     raft = RaftConsensus(
         [("127.0.0.1", 17000), ("127.0.0.1", 18000), ("127.0.0.1", 19000)],
         index,
         state_machine_q,
-        Persister("raft_{}.log".format(str(index))),
+        Persister(raft_log_file),
     )
     lock_svc = LockServer(raft, state_machine_q, index)
     port = str(port)
@@ -44,10 +46,11 @@ def main():
 
     parser.add_argument("--index", required=True, help="Index")
     parser.add_argument("--port", required=True, help="Port")
+    parser.add_argument("--state-dir", required=True, help="State Directory")
     args = parser.parse_args()
     index = int(args.index)
     port = int(args.port)
-    serve(index, port)
+    serve(index, port, args.state_dir)
 
 
 if __name__ == "__main__":

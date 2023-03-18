@@ -5,7 +5,7 @@ import uuid
 
 import grpc
 
-from common.rpc_client import RPCClient, RPCFailedError
+from lstream.common.rpc_client import RPCClient, RPCFailedError
 from lstream.proto import lstream_pb2, lstream_pb2_grpc
 
 LOG = logging.getLogger(__name__)

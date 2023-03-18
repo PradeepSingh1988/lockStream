@@ -36,3 +36,5 @@ assert client.release("test") == True
 ```
 
 
+## Note
+Implementation is just for education purpose.
